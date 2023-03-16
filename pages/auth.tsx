@@ -1,10 +1,14 @@
 import Input from '@/components/Input';
+import axios from 'axios';
 import { useCallback, useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
 
 function Auth() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userName, setUserName] = useState('');
+  const [name, setName] = useState('');
 
   const [variant, setVariant] = useState('login');
   const toggleVariant = useCallback(() => {
@@ -12,6 +16,32 @@ function Auth() {
       return currentVar === 'login' ? 'register' : 'login';
     });
   }, [setVariant]);
+  const login = useCallback(async () => {
+    try {
+      await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: '/',
+      });
+      router.push('/');
+    } catch (e) {
+      console.log(e);
+    }
+  }, [email, password, router]);
+
+  const register = useCallback(async () => {
+    try {
+      await axios.post('/api/register', {
+        name,
+        email,
+        password,
+      });
+      await login()
+    } catch (e) {
+      console.log(e);
+    }
+  }, [email, name, password,login]);
 
   return (
     <div className="relative h-full w-full bg-[url('/images/hero.jpg')] bg-no-repeat bg-center bg-cover">
@@ -35,11 +65,11 @@ function Auth() {
                 <Input
                   label="Username"
                   onChange={(e) => {
-                    setUserName(e.target.value);
+                    setName(e.target.value);
                   }}
                   id="username"
                   type="username"
-                  value={userName}
+                  value={name}
                 />
               )}
               <Input
@@ -60,7 +90,12 @@ function Auth() {
                 type="password"
                 value={password}
               />
-              <button className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 ">
+              <button
+                onClick={
+                  variant === 'login' ? login : register
+                }
+                className="bg-red-600 py-3 text-white rounded-md w-full mt-10 hover:bg-red-700 "
+              >
                 {variant === 'login' ? 'Login' : 'Sign Up'}
               </button>
               <p className="text-neutral-500 mt12">
