@@ -24,7 +24,7 @@ function Auth() {
         redirect: false,
         callbackUrl: '/',
       });
-      router.push('/');
+      router.push('/profiles');
     } catch (e) {
       console.log(e);
     }
