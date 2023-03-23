@@ -3,6 +3,7 @@ import { NextPageContext } from 'next';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import React from 'react';
 import Navbar from '@/components/Navbar';
+import useBillboard from '@/hooks/useBillboard';
 
 export async function getServerSideProps(
   context: NextPageContext
@@ -21,6 +22,9 @@ export async function getServerSideProps(
 
 export default function Home() {
   const { data: user } = useCurrentUser();
+
+  const { data } = useBillboard();
+  console.log(data);
   return (
     <>
 
